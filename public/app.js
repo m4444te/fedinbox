@@ -4,7 +4,7 @@ let archivedPosts = JSON.parse(localStorage.getItem('archivedPosts')) || [];
 // Fetch posts from the backend
 async function fetchPosts() {
   try {
-    const response = await fetch('/api/posts');
+    const response = await fetch('/api/toots');
     const posts = await response.json();
     displayPosts(posts);
   } catch (error) {
@@ -69,22 +69,35 @@ function archivePost(postId) {
   fetchPosts(); // Refresh the inbox after archiving a post
 }
 
-// Function to open Mastodon share link
-function sharePost(post) {
-  // Encode the content to handle special characters
-    const encodedContent = encodeURIComponent(` ${post.content}`);
-    
-    console.log(encodedContent);
-  
-  // Construct the share URL
-    const mastodonShareUrl = `https://bzh.social/share?text=${encodedContent}`;
-    
-    // Log the URL for debugging
-    console.log('Share URL:', mastodonShareUrl);
-    
-    // Open the share URL in a new tab
-    window.open(mastodonShareUrl, '_blank');
-}
+// Function to handle sharing a post
+  function sharePost(postId, postContent) {
+    // Example action: log the post content or send it to a server
+    console.log(`Sharing post ID: ${postId}`);
+    console.log(`Post content: ${postContent}`);
+
+    // You can also send this data to a server or use another sharing method
+    // Example: Sending post data to a server
+    fetch('/api/share', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ postId, postContent }),
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Error sharing the post');
+      }
+    })
+    .then(data => {
+      console.log('Post shared successfully:', data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
 
 // Fetch posts on page load
 window.onload = fetchPosts;

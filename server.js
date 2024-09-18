@@ -16,7 +16,7 @@ const INSTANCE_URL = process.env.MASTODON_INSTANCE_URL;
 app.use(express.static('public'));
 
 // API to fetch posts from a Mastodon instance
-app.get('/api/posts', async (req, res) => {
+app.get('/api/toots', async (req, res) => {
     try {
         const response = await fetch(`${INSTANCE_URL}/api/v1/timelines/public?limit=100`);
         const posts = await response.json();
@@ -28,7 +28,8 @@ app.get('/api/posts', async (req, res) => {
 
 // Endpoint to post a toot
 app.post('/api/share/', async (req, res) => {
-  const { status } = req.body;
+    
+    const { status } = req.body;
 
   try {
     const response = await axios.post(
