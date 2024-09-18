@@ -40,7 +40,10 @@ function displayPosts(posts) {
         <p><a href="${post.url}" target="_blank">View Post</a></p>
       </div>
       ${hasContentWarning ? `<button class="show-more-btn" onclick="toggleContent(this)">Show More</button>` : ''}
-      <button class="archive-btn" onclick="archivePost('${post.id}')">Archive</button>
+      <div class="button-container">
+        <button class="archive-btn" onclick="archivePost('${post.id}')">Archive</button>
+        <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
+      </div>
     `;
 
     inbox.appendChild(postElement);
@@ -64,6 +67,23 @@ function archivePost(postId) {
   archivedPosts.push(postId);
   localStorage.setItem('archivedPosts', JSON.stringify(archivedPosts));
   fetchPosts(); // Refresh the inbox after archiving a post
+}
+
+// Function to open Mastodon share link
+function sharePost(post) {
+  // Encode the content to handle special characters
+    const encodedContent = encodeURIComponent(` ${post.content}`);
+    
+    console.log(encodedContent);
+  
+  // Construct the share URL
+    const mastodonShareUrl = `https://bzh.social/share?text=${encodedContent}`;
+    
+    // Log the URL for debugging
+    console.log('Share URL:', mastodonShareUrl);
+    
+    // Open the share URL in a new tab
+    window.open(mastodonShareUrl, '_blank');
 }
 
 // Fetch posts on page load

@@ -1,31 +1,23 @@
-const express = require('express');
-const axios = require('axios');
-const path = require('path');
+import express from 'express';
+import fetch from 'node-fetch';
 
 const app = express();
 const PORT = 8080;
 
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from the "public" folder
+app.use(express.static('public'));
 
-// Set your Mastodon instance URL
-const MASTODON_URL = 'https://bzh.social'; // Change this to your desired instance
-
-// API Route to fetch posts from Mastodon
+// API to fetch posts from a Mastodon instance
 app.get('/api/posts', async (req, res) => {
   try {
-    // Fetch public posts (toots) from the Mastodon public timeline
-    const response = await axios.get(`${MASTODON_URL}/api/v1/timelines/public`);
-
-    // Return posts in the response
-    res.json(response.data);
+    const response = await fetch('https://bzh.social/api/v1/timelines/public?limit=10');
+    const posts = await response.json();
+    res.json(posts);
   } catch (error) {
-    console.error('Error fetching posts from Mastodon:', error);
-    res.status(500).json({ error: 'Failed to fetch posts' });
+    res.status(500).json({ error: 'Error fetching posts' });
   }
 });
 
-// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
