@@ -17,17 +17,17 @@ app.use(express.static('public'));
 
 // API to fetch posts from a Mastodon instance
 app.get('/api/posts', async (req, res) => {
-  try {
-    const response = await fetch('https://bzh.social/api/v1/timelines/public?limit=10');
-    const posts = await response.json();
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching posts' });
+    try {
+        const response = await fetch(`${INSTANCE_URL}/api/v1/timelines/public?limit=100`);
+        const posts = await response.json();
+        res.json(posts);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching posts' });
   }
 });
 
 // Endpoint to post a toot
-app.post('/api/share', async (req, res) => {
+app.post('/api/share/', async (req, res) => {
   const { status } = req.body;
 
   try {
