@@ -1,12 +1,14 @@
 import express from 'express';
-import fetch from 'node-fetch';
+import bodyParser from 'body-parser';
+import axios from 'axios';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
 const app = express();
+app.use(bodyParser.json());
 
 // Load environment variables
-const PORT = process.env.MASTODON_ACCESS_TOKEN;
 const ACCESS_TOKEN = process.env.MASTODON_ACCESS_TOKEN;
 const INSTANCE_URL = process.env.MASTODON_INSTANCE_URL;
 
@@ -24,7 +26,29 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+// Endpoint to post a toot
+app.post('/api/share', async (req, res) => {
+  const { status } = req.body;
 
+  try {
+    const response = await axios.post(
+      `${INSTANCE_URL}/api/v1/statuses`,
+      { status },
+      {
+        headers: {
+          'Authorization': `Bearer ${ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    res.status(200).json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Error sharing toot' });
+  }
+});
+
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
