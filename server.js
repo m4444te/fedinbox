@@ -1,8 +1,14 @@
 import express from 'express';
 import fetch from 'node-fetch';
 
+require('dotenv').config();
+
 const app = express();
-const PORT = 8080;
+
+// Load environment variables
+const PORT = process.env.MASTODON_ACCESS_TOKEN;
+const ACCESS_TOKEN = process.env.MASTODON_ACCESS_TOKEN;
+const INSTANCE_URL = process.env.MASTODON_INSTANCE_URL;
 
 // Serve static files from the "public" folder
 app.use(express.static('public'));
@@ -17,6 +23,7 @@ app.get('/api/posts', async (req, res) => {
     res.status(500).json({ error: 'Error fetching posts' });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
