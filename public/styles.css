@@ -1,17 +1,22 @@
-/* Basic body and container styling */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    line-height: 1.6;
+}
 
+/* Header styles */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #f8f9fa;
-    padding: 10px 20px;
+    padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -19,63 +24,66 @@ header {
     background-color: #28a745;
     color: white;
     border: none;
-    padding: 10px 15px;
-    font-size: 16px;
+    padding: 0.625rem 0.9375rem;
+        font-size: 1rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 0.3125rem;
     transition: background-color 0.3s ease;
+    margin-bottom: 1rem;
+        /* Add space after the archive-all button */
 }
-
-#archive-all-btn:hover {
+.archive-all-btn:hover {
     background-color: #218838;
 }
+/* Main container styles */
 .container {
-    max-width: 800px;
-    margin: 50px auto;
+    max-width: 50rem;
+        margin: 3.125rem auto;
     background-color: white;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 1.25rem;
+        border-radius: 0.625rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
     color: #333;
+    margin-bottom: 1.25rem;
 }
 
 /* Inbox post styling */
 #post-inbox {
-    margin-top: 20px;
+    margin-top: 1.25rem;
 }
 
 .post {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+    padding: 0.9375rem;
+        margin-bottom: 0.625rem;
+        border-radius: 0.3125rem;
     position: relative;
 }
 
 .post-content {
-    margin-top: 10px;
+    margin-top: 0.625rem;
 }
 
 /* Button styles */
-/* Button container styling to place buttons side by side */
 .button-container {
     display: flex;
     align-items: center;
-    gap: 10px;
-    /* Adjust gap between buttons */
+    gap: 0.625rem;
+        margin-top: 0.9375rem;
 }
 
-/* Individual button styles */
 button {
-    padding: 5px 10px;
+    padding: 0.3125rem 0.625rem;
     border: none;
-    border-radius: 3px;
+    border-radius: 0.1875rem;
     cursor: pointer;
+    font-size: 0.875rem;
+        transition: background-color 0.3s ease;
 }
 
 .show-more-btn {
@@ -84,7 +92,7 @@ button {
 }
 
 .show-more-btn:hover {
-    background-color: #0056b3;
+    background-color: #e6a500;
 }
 
 .share-btn {
