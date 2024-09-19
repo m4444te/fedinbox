@@ -60,7 +60,7 @@ function displayPosts(posts) {
         const shareButton = postElement.querySelector('.share-btn');
         shareButton.addEventListener('click', () => {
             const content = decodeURIComponent(shareButton.getAttribute('data-content'));
-            sharePost(post.id, content);
+            sharePost(post.id, content, post.account.display_name || post.account.username);
         });
     });
 }
@@ -85,18 +85,21 @@ function archivePost(postId) {
     fetchPosts(); // Refresh the inbox after archiving a post
 }
 
-// Function to handle sharing a post
-async function sharePost(postId, postContent) {
+async function sharePost(postId, postContent, author) {
     try {
         console.log(`Attempting to share post ID: ${postId}`);
         console.log(`Raw post content:`, postContent);
+        console.log(`Author:`, author);
 
         // Remove HTML tags from the content
         const contentToShare = postContent.replace(/<[^>]*>?/gm, '');
 
-        console.log(`Processed content to share:`, contentToShare);
+        // Prepare the content with author information
+        const fullContentToShare = `${contentToShare} – ${author}`;
 
-        const requestBody = JSON.stringify({ postContent: contentToShare });
+        console.log(`Processed content to share:`, fullContentToShare);
+
+        const requestBody = JSON.stringify({ postContent: fullContentToShare });
         console.log(`Request body:`, requestBody);
 
         const response = await fetch('/api/share', {
