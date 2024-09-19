@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import basicAuth from 'express-basic-auth';
 
 dotenv.config();
 
@@ -11,6 +12,18 @@ app.use(bodyParser.json());
 // Load environment variables
 const ACCESS_TOKEN = process.env.MASTODON_ACCESS_TOKEN;
 const INSTANCE_URL = process.env.MASTODON_INSTANCE_URL;
+const AUTH_USERNAME = process.env.AUTH_USERNAME;
+const AUTH_PASSWORD = process.env.AUTH_PASSWORD;
+
+// Basic Authentication middleware
+const basicAuthMiddleware = basicAuth({
+    users: { [AUTH_USERNAME]: AUTH_PASSWORD },
+    challenge: true,
+    realm: 'Mastodon API Proxy',
+});
+
+// Apply Basic Auth to all routes
+app.use(basicAuthMiddleware);
 
 // Serve static files from the "public" folder
 app.use(express.static('public'));
@@ -40,21 +53,16 @@ app.get('/api/toots', async (req, res) => {
 // Endpoint to post a toot
 app.post('/api/share', async (req, res) => {
     console.log('Received share request. Body:', req.body);
-
     if (!req.body || Object.keys(req.body).length === 0) {
         console.error('Request body is empty');
         return res.status(400).json({ error: 'Request body is empty' });
     }
-
     const { postContent } = req.body;
-    
     if (!postContent) {
         console.error('Missing postContent in request body');
         return res.status(400).json({ error: 'Missing postContent in request body' });
     }
-
     console.log('Content to share:', postContent);
-
     try {
         const response = await axios.post(
             `${INSTANCE_URL}/api/v1/statuses`,
@@ -70,9 +78,9 @@ app.post('/api/share', async (req, res) => {
         res.status(200).json(response.data);
     } catch (error) {
         console.error('Error sharing toot:', error.response ? error.response.data : error.message);
-        res.status(500).json({ 
-            error: 'Error sharing toot', 
-            details: error.response ? error.response.data : error.message 
+        res.status(500).json({
+            error: 'Error sharing toot',
+            details: error.response ? error.response.data : error.message
         });
     }
 });
