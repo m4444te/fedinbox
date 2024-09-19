@@ -40,9 +40,8 @@ function displayPosts(posts) {
             </div>
             ${hasContentWarning ?
                 `<div class="button-container">
-                    <button class="show-more-btn" onclick="toggleContent(this)">Show More</button>
-                </div>` : ''}
-            <div class="button-container">
+                    <button class="show-more-btn" onclick="toggleContent(this)">Show More</button>` : ''}
+            
                 <button class="archive-btn" data-id="${post.id}">Archive</button>
                 <button class="share-btn" data-content="${encodeURIComponent(post.content)}">Share</button>
             </div>
