@@ -1,5 +1,4 @@
-de# fedinbox
-a fediverse inbox 
+# fedinboxa fediverse inbox 
 
 ## Getting started
 
