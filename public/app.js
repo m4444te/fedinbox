@@ -39,7 +39,9 @@ function displayPosts(posts) {
         <p><strong>From:</strong> ${post.account.username}</p>
         <p><a href="${post.url}" target="_blank">View Post</a></p>
       </div>
-      ${hasContentWarning ? `<button class="show-more-btn" onclick="toggleContent(this)">Show More</button>` : ''}
+      ${hasContentWarning ?
+      `<div class="button-container">
+        <button class="show-more-btn" onclick="toggleContent(this)">Show More</button>` : ''}
       <div class="button-container">
         <button class="archive-btn" onclick="archivePost('${post.id}')">Archive</button>
         <button class="share-btn" onclick="sharePost('${post.id}')">Share</button>
