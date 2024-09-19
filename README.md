@@ -1,6 +1,6 @@
 # fedinbox
 
-a fediverse inbox 
+A fediverse inbox 
 
 ## Getting started
 
