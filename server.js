@@ -15,6 +15,16 @@ const INSTANCE_URL = process.env.MASTODON_INSTANCE_URL;
 // Serve static files from the "public" folder
 app.use(express.static('public'));
 
+// Middleware to log request details
+app.use((req, res, next) => {
+    console.log('Request received:');
+    console.log('Method:', req.method);
+    console.log('Path:', req.path);
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    next();
+});
+
 // API to fetch posts from a Mastodon instance
 app.get('/api/toots', async (req, res) => {
     try {
@@ -22,34 +32,52 @@ app.get('/api/toots', async (req, res) => {
         const posts = await response.json();
         res.json(posts);
     } catch (error) {
-        res.status(500).json({ error: 'Error fetching posts' });
-  }
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ error: 'Error fetching posts', details: error.message });
+    }
 });
 
 // Endpoint to post a toot
-app.post('/api/share/', async (req, res) => {
+app.post('/api/share', async (req, res) => {
+    console.log('Received share request. Body:', req.body);
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+        console.error('Request body is empty');
+        return res.status(400).json({ error: 'Request body is empty' });
+    }
+
+    const { postContent } = req.body;
     
-    const { status } = req.body;
+    if (!postContent) {
+        console.error('Missing postContent in request body');
+        return res.status(400).json({ error: 'Missing postContent in request body' });
+    }
 
-  try {
-    const response = await axios.post(
-      `${INSTANCE_URL}/api/v1/statuses`,
-      { status },
-      {
-        headers: {
-          'Authorization': `Bearer ${ACCESS_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    res.status(200).json(response.data);
-  } catch (error) {
-    res.status(500).json({ error: 'Error sharing toot' });
-  }
+    console.log('Content to share:', postContent);
+
+    try {
+        const response = await axios.post(
+            `${INSTANCE_URL}/api/v1/statuses`,
+            { status: postContent },
+            {
+                headers: {
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Mastodon API response:', response.data);
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error('Error sharing toot:', error.response ? error.response.data : error.message);
+        res.status(500).json({ 
+            error: 'Error sharing toot', 
+            details: error.response ? error.response.data : error.message 
+        });
+    }
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
