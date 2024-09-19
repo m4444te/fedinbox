@@ -1,4 +1,6 @@
-# fedinboxa fediverse inbox 
+# fedinbox
+
+a fediverse inbox 
 
 ## Getting started
 
