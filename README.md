@@ -11,10 +11,18 @@ cd fedinbox/
 npm install
 ```
 
-2. Start the server
+2. Edit the .env.example file and copy it to .env
+
+```bash
+MASTODON_ACCESS_TOKEN="123456789-abcdefghijkl"
+MASTODON_INSTANCE_URL="https://social.example"
+PORT="8080"
+```
+
+3. Start the server
 
 ```
 npm run start
 ```
 
-3. Et voilà !
+4. Et voilà !
