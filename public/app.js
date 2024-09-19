@@ -84,6 +84,7 @@ function archivePost(postId) {
     fetchPosts(); // Refresh the inbox after archiving a post
 }
 
+
 async function sharePost(postId, postContent, author) {
     try {
         console.log(`Attempting to share post ID: ${postId}`);
