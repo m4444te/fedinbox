@@ -1,4 +1,4 @@
-# fedinbox
+de# fedinbox
 a fediverse inbox 
 
 ## Getting started
@@ -22,7 +22,7 @@ PORT="8080"
 3. Start the server
 
 ```
-npm run start
+npm start
 ```
 
 4. Et voilà !
