@@ -25,6 +25,13 @@ function displayPosts(posts) {
         return;
     }
 
+    // Add "Archive All" button
+    const archiveAllButton = document.createElement('button');
+    archiveAllButton.textContent = 'Archive All';
+    archiveAllButton.classList.add('archive-all-btn');
+    archiveAllButton.addEventListener('click', archiveAllPosts);
+    inbox.appendChild(archiveAllButton);
+
     visiblePosts.forEach(post => {
         const postElement = document.createElement('div');
         postElement.classList.add('post');
@@ -84,6 +91,15 @@ function archivePost(postId) {
     fetchPosts(); // Refresh the inbox after archiving a post
 }
 
+// Archive all posts
+function archiveAllPosts() {
+    const visiblePostIds = Array.from(document.querySelectorAll('.archive-btn'))
+        .map(button => button.getAttribute('data-id'));
+    
+    archivedPosts = [...new Set([...archivedPosts, ...visiblePostIds])];
+    localStorage.setItem('archivedPosts', JSON.stringify(archivedPosts));
+    fetchPosts(); // Refresh the inbox after archiving all posts
+}
 
 async function sharePost(postId, postContent, author) {
     try {
