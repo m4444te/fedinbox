@@ -111,7 +111,7 @@ async function sharePost(postId, postContent, author) {
         const contentToShare = postContent.replace(/<[^>]*>?/gm, '');
 
         // Prepare the content with author information
-        const fullContentToShare = `${contentToShare} – ${author}`;
+        const fullContentToShare = `Stolen from ${author} : ${contentToShare}`;
 
         console.log(`Processed content to share:`, fullContentToShare);
 
