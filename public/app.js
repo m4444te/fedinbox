@@ -1,11 +1,19 @@
 // Simulate a local storage or state for archived posts
 let archivedPosts = JSON.parse(localStorage.getItem('archivedPosts')) || [];
+let favoritedPosts = new Set(JSON.parse(localStorage.getItem('favoritedPosts')) || []);
 
 // Fetch posts from the backend
 async function fetchPosts() {
     try {
         const response = await fetch('/api/toots');
         const posts = await response.json();
+        
+        // Fetch favorites to update the local state
+        const favoritesResponse = await fetch('/api/favorites');
+        const favorites = await favoritesResponse.json();
+        favoritedPosts = new Set(favorites.map(fav => fav.id));
+        localStorage.setItem('favoritedPosts', JSON.stringify([...favoritedPosts]));
+        
         displayPosts(posts);
     } catch (error) {
         console.error('Error fetching posts:', error);
@@ -38,6 +46,7 @@ function displayPosts(posts) {
 
         // Check if the post has a content warning (spoiler_text)
         const hasContentWarning = post.spoiler_text && post.spoiler_text.trim() !== '';
+        const isFavorited = favoritedPosts.has(post.id);
 
         postElement.innerHTML = `
             ${hasContentWarning ? `<p><strong>Content Warning:</strong> ${post.spoiler_text}</p>` : ''}
@@ -51,6 +60,9 @@ function displayPosts(posts) {
             
                 <button class="archive-btn" data-id="${post.id}">Archive</button>
                 <button class="share-btn" data-content="${encodeURIComponent(post.content)}">Share</button>
+                <button class="favorite-btn ${isFavorited ? 'favorited' : ''}" data-id="${post.id}">
+                    ${isFavorited ? '★ Unfavorite' : '☆ Favorite'}
+                </button>
             </div>
         `;
         inbox.appendChild(postElement);
@@ -68,7 +80,50 @@ function displayPosts(posts) {
             const content = decodeURIComponent(shareButton.getAttribute('data-content'));
             sharePost(post.id, content, post.account.display_name || post.account.username);
         });
+
+        // Add click event listener to the favorite button
+        const favoriteButton = postElement.querySelector('.favorite-btn');
+        favoriteButton.addEventListener('click', () => {
+            const postId = favoriteButton.getAttribute('data-id');
+            toggleFavorite(postId, favoriteButton);
+        });
     });
+}
+
+// Toggle favorite status of a post
+async function toggleFavorite(postId, button) {
+    try {
+        const isFavorited = favoritedPosts.has(postId);
+        const endpoint = isFavorited ? '/api/unfavorite' : '/api/favorite';
+        
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: postId }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to ${isFavorited ? 'unfavorite' : 'favorite'} post`);
+        }
+
+        if (isFavorited) {
+            favoritedPosts.delete(postId);
+            button.textContent = '☆ Favorite';
+            button.classList.remove('favorited');
+        } else {
+            favoritedPosts.add(postId);
+            button.textContent = '★ Unfavorite';
+            button.classList.add('favorited');
+        }
+
+        localStorage.setItem('favoritedPosts', JSON.stringify([...favoritedPosts]));
+        
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+        alert(`Error ${isFavorited ? 'unfavoriting' : 'favoriting'} post. Please try again.`);
+    }
 }
 
 // Function to toggle the visibility of post content when "Show More" is clicked

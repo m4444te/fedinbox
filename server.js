@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import basicAuth from 'express-basic-auth';
 
 dotenv.config();
-
 const app = express();
 app.use(bodyParser.json());
 
@@ -53,16 +52,20 @@ app.get('/api/toots', async (req, res) => {
 // Endpoint to post a toot
 app.post('/api/share', async (req, res) => {
     console.log('Received share request. Body:', req.body);
+    
     if (!req.body || Object.keys(req.body).length === 0) {
         console.error('Request body is empty');
         return res.status(400).json({ error: 'Request body is empty' });
     }
+
     const { postContent } = req.body;
     if (!postContent) {
         console.error('Missing postContent in request body');
         return res.status(400).json({ error: 'Missing postContent in request body' });
     }
+
     console.log('Content to share:', postContent);
+    
     try {
         const response = await axios.post(
             `${INSTANCE_URL}/api/v1/statuses`,
@@ -81,6 +84,93 @@ app.post('/api/share', async (req, res) => {
         res.status(500).json({
             error: 'Error sharing toot',
             details: error.response ? error.response.data : error.message
+        });
+    }
+});
+
+// NEW: Endpoint to favorite a toot
+app.post('/api/favorite', async (req, res) => {
+    console.log('Received favorite request. Body:', req.body);
+
+    if (!req.body || !req.body.id) {
+        console.error('Missing toot ID in request body');
+        return res.status(400).json({ error: 'Missing toot ID in request body' });
+    }
+
+    const { id } = req.body;
+    
+    try {
+        const response = await axios.post(
+            `${INSTANCE_URL}/api/v1/statuses/${id}/favourite`,
+            {},
+            {
+                headers: {
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Favorite response:', response.data);
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error('Error favoriting toot:', error.response ? error.response.data : error.message);
+        res.status(500).json({
+            error: 'Error favoriting toot',
+            details: error.response ? error.response.data : error.message
+        });
+    }
+});
+
+// NEW: Endpoint to unfavorite a toot
+app.post('/api/unfavorite', async (req, res) => {
+    console.log('Received unfavorite request. Body:', req.body);
+
+    if (!req.body || !req.body.id) {
+        console.error('Missing toot ID in request body');
+        return res.status(400).json({ error: 'Missing toot ID in request body' });
+    }
+
+    const { id } = req.body;
+    
+    try {
+        const response = await axios.post(
+            `${INSTANCE_URL}/api/v1/statuses/${id}/unfavourite`,
+            {},
+            {
+                headers: {
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        console.log('Unfavorite response:', response.data);
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.error('Error unfavoriting toot:', error.response ? error.response.data : error.message);
+        res.status(500).json({
+            error: 'Error unfavoriting toot',
+            details: error.response ? error.response.data : error.message
+        });
+    }
+});
+
+// NEW: Endpoint to get favorited toots
+app.get('/api/favorites', async (req, res) => {
+    try {
+        const response = await axios.get(
+            `${INSTANCE_URL}/api/v1/favourites`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                },
+            }
+        );
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error fetching favorites:', error);
+        res.status(500).json({ 
+            error: 'Error fetching favorites', 
+            details: error.response ? error.response.data : error.message 
         });
     }
 });
